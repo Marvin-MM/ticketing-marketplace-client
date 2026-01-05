@@ -126,8 +126,8 @@
 
 import axios, { type AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from "axios"
 
-const BASE_URL = "http://localhost:5000/api/v1"
-// const BASE_URL = "https://ticketing-marketplace.onrender.com/api/v1"
+// const BASE_URL = "http://localhost:5000/api/v1"
+const BASE_URL = "https://ticketing-marketplace.onrender.com/api/v1"
 
 // Global state to manage token refresh
 let isRefreshing = false
