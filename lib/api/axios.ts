@@ -38,7 +38,7 @@
 //       const isAuthEndpoint = originalRequest.url?.includes("/auth/refresh-token") || 
 //                             originalRequest.url?.includes("/auth/logout") ||
 //                             originalRequest.url?.includes("/auth/login")
-      
+
 //       if (isAuthEndpoint) {
 //         // Don't attempt to refresh for auth endpoints, just reject
 //         if (typeof window !== "undefined" && !originalRequest.url?.includes("/auth/login")) {
@@ -127,7 +127,8 @@
 import axios, { type AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from "axios"
 
 // const BASE_URL = "http://localhost:5000/api/v1"
-const BASE_URL = "https://ticketing-marketplace.onrender.com/api/v1"
+// const BASE_URL = "https://ticketing-marketplace.onrender.com/api/v1"
+const BASE_URL = "/api/v1"
 
 // Global state to manage token refresh
 let isRefreshing = false
@@ -176,11 +177,11 @@ apiClient.interceptors.response.use(
     // Handle 401 Unauthorized - try to refresh token
     if (error.response?.status === 401 && !originalRequest._retry) {
       // Don't retry if the failed request was already a refresh-token, logout, or login request
-      const isAuthEndpoint = originalRequest.url?.includes("/auth/refresh-token") || 
-                            originalRequest.url?.includes("/auth/logout") ||
-                            originalRequest.url?.includes("/auth/login") ||
-                            originalRequest.url?.includes("/auth/register")
-      
+      const isAuthEndpoint = originalRequest.url?.includes("/auth/refresh-token") ||
+        originalRequest.url?.includes("/auth/logout") ||
+        originalRequest.url?.includes("/auth/login") ||
+        originalRequest.url?.includes("/auth/register")
+
       if (isAuthEndpoint) {
         console.log('[API] Auth endpoint failed, not retrying')
         // Don't attempt to refresh for auth endpoints, just reject
@@ -204,9 +205,9 @@ apiClient.interceptors.response.use(
         try {
           // Attempt to refresh the session
           const { data } = await apiClient.post("/auth/refresh-token")
-          
+
           console.log('[API] Token refreshed successfully')
-          
+
           // Update auth store with new user data if available
           if (data?.data?.user) {
             // Use dynamic import to avoid circular dependency
@@ -214,22 +215,22 @@ apiClient.interceptors.response.use(
               useAuthStore.getState().setUser(data.data.user)
             })
           }
-          
+
           isRefreshing = false
-          
+
           // Notify all waiting requests that refresh succeeded
           onRefreshComplete()
-          
+
           // Retry the original request
           return apiClient(originalRequest)
-          
+
         } catch (refreshError) {
           console.error('[API] Token refresh failed:', refreshError)
           isRefreshing = false
-          
+
           // Notify all waiting requests that refresh failed
           onRefreshComplete(refreshError)
-          
+
           // Refresh failed, clear auth and redirect to login
           if (typeof window !== "undefined") {
             // Use dynamic import to avoid circular dependency
